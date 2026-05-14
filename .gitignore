@@ -30,3 +30,7 @@ Thumbs.db
 # IDE - Visual Studio Code
 # Configurações específicas do editor
 .vscode/
+
+dist/
+.env*
+*.log
