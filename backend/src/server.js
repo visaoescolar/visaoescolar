@@ -35,6 +35,20 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+const calcularMediana = (notas) => {
+  if (notas.length === 0) return 0;
+
+  // 1. Ordenar as notas (do menor para o maior)
+  const ordenadas = [...notas].sort((a, b) => a - b);
+  const meio = Math.floor(ordenadas.length / 2);
+
+  // 2. Se for ímpar, pega o do meio. Se for par, faz a média dos dois do meio.
+  if (ordenadas.length % 2 !== 0) {
+    return ordenadas[meio];
+  }
+  return (ordenadas[meio - 1] + ordenadas[meio]) / 2;
+};
+
 // Dados fake para teste (remover quando integrar com banco de dados)
 const usuariosFake = [
   {
@@ -53,12 +67,42 @@ const usuariosFake = [
 
 // Dados fictícios para o Dashboard
 const alunos = [
-  { id: 1, nome: "João Silva", matricula: "2024001", turma: "9º A", media: 7.8 },
-  { id: 2, nome: "Maria Santos", matricula: "2024002", turma: "9º A", media: 8.5 },
-  { id: 3, nome: "Pedro Costa", matricula: "2024003", turma: "9º B", media: 6.9 },
+  {
+    id: 1,
+    nome: "João Silva",
+    matricula: "2024001",
+    turma: "9º A",
+    media: 7.8,
+  },
+  {
+    id: 2,
+    nome: "Maria Santos",
+    matricula: "2024002",
+    turma: "9º A",
+    media: 8.5,
+  },
+  {
+    id: 3,
+    nome: "Pedro Costa",
+    matricula: "2024003",
+    turma: "9º B",
+    media: 6.9,
+  },
   { id: 4, nome: "Ana Paula", matricula: "2024004", turma: "9º B", media: 9.2 },
-  { id: 5, nome: "Carlos Oliveira", matricula: "2024005", turma: "9º A", media: 7.4 },
-  { id: 6, nome: "Fernanda Lima", matricula: "2024006", turma: "9º C", media: 8.1 },
+  {
+    id: 5,
+    nome: "Carlos Oliveira",
+    matricula: "2024005",
+    turma: "9º A",
+    media: 7.4,
+  },
+  {
+    id: 6,
+    nome: "Fernanda Lima",
+    matricula: "2024006",
+    turma: "9º C",
+    media: 8.1,
+  },
 ];
 
 const desempenhoGeral = {
@@ -234,6 +278,20 @@ app.get("/dashboard-stats", (req, res) => {
   });
 });
 
+// ============================================================================
+// ROTAS DA API
+// ============================================================================
+
+// Importar rotas
+const cursoRoutes = require("./routes/cursoRoutes");
+const disciplinaRoutes = require("./routes/disciplinaRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+
+// Usar rotas
+app.use("/api/cursos", cursoRoutes);
+app.use("/api/disciplinas", disciplinaRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -243,6 +301,8 @@ app.use((err, req, res, next) => {
 // Start server (Modo Mock - sem conexão com banco de dados)
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`Documentação Swagger disponível em http://localhost:${PORT}/api-docs`);
+  console.log(
+    `Documentação Swagger disponível em http://localhost:${PORT}/api-docs`,
+  );
   console.log("Modo: Mock (dados fictícios)");
 });
