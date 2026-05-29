@@ -9,6 +9,20 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const supabase = require("./config/supabase");
+
+app.get("/check-db", async (req, res) => {
+  // Tenta ler a tabela de usuários que você criou no script SQL
+  const { data, error } = await supabase.from("usuarios").select("id").limit(1);
+
+  if (error) {
+    return res
+      .status(500)
+      .json({ status: "Erro ao conectar", erro: error.message });
+  }
+  res.json({ status: "Banco Online e Conectado!", dados: data });
+});
+
 // Middlewares
 app.use(cors());
 app.use(express.json());
