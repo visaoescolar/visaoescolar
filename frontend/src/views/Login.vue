@@ -194,7 +194,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { GraduationCap, Mail, Lock } from "lucide-vue-next";
+import { Mail, Lock } from "lucide-vue-next"; // Removi o GraduationCap que não estava sendo usado no template
 import api from "../api/index.js";
 
 const router = useRouter();
@@ -212,10 +212,28 @@ const erroLogin = ref(false);
 const carregandoLogin = ref(false);
 const carregandoCadastro = ref(false);
 
+const limparCampos = () => {
+  // Limpa campos de Login
+  usuarioLogin.value = "";
+  senhaLogin.value = "";
+
+  // Limpa campos de Cadastro
+  nomeCadastro.value = "";
+  usuarioCadastro.value = "";
+  senhaCadastro.value = "";
+  tipoUsuario.value = "professor"; // Volta ao padrão
+
+  // Limpa mensagens de erro
+  erroCadastro.value = "";
+  mensagemLogin.value = "";
+};
+
 const irParaCadastro = () => {
+  limparCampos();
   modoCadastro.value = true;
 };
 const irParaLogin = () => {
+  limparCampos();
   modoCadastro.value = false;
 };
 
@@ -224,16 +242,23 @@ async function entrar() {
   erroLogin.value = false;
   carregandoLogin.value = true;
   try {
-    const res = await api.post("/login", {
+    // CORREÇÃO: A rota agora é /auth/login (assumindo que seu api/index.js já tem o /api)
+    const res = await api.post("/auth/login", {
       email: usuarioLogin.value,
       senha: senhaLogin.value,
     });
-    localStorage.setItem("token", res.data.token);
-    mensagemLogin.value = "Login realizado! Redirecionando...";
-    setTimeout(() => router.push("/dashboard"), 500);
+
+    // CORREÇÃO: O token agora vem dentro de res.data.dados.token (conforme o AuthService que criamos)
+    if (res.data.sucesso) {
+      localStorage.setItem("token", res.data.dados.token);
+      localStorage.setItem("usuario", JSON.stringify(res.data.dados.usuario));
+
+      mensagemLogin.value = "Login realizado! Redirecionando...";
+      setTimeout(() => router.push("/dashboard"), 500);
+    }
   } catch (err) {
     mensagemLogin.value =
-      err.response?.data?.message || "E-mail ou senha incorretos.";
+      err.response?.data?.mensagem || "E-mail ou senha incorretos.";
     erroLogin.value = true;
   } finally {
     carregandoLogin.value = false;
@@ -244,16 +269,20 @@ async function cadastrar() {
   erroCadastro.value = "";
   carregandoCadastro.value = true;
   try {
-    await api.post("/usuarios", {
+    await api.post("/auth/registrar", {
       nome: nomeCadastro.value,
       email: usuarioCadastro.value,
       senha: senhaCadastro.value,
       tipo_usuario: tipoUsuario.value,
     });
+
+    // Limpa os campos antes de voltar para a tela de login
+    limparCampos();
+
     modoCadastro.value = false;
     mensagemLogin.value = "Cadastro realizado! Faça login.";
   } catch (err) {
-    erroCadastro.value = "Erro ao cadastrar. Tente outro e-mail.";
+    erroCadastro.value = err.response?.data?.mensagem || "Erro ao cadastrar.";
   } finally {
     carregandoCadastro.value = false;
   }

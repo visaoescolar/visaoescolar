@@ -174,9 +174,14 @@
                 <td class="py-3">{{ aluno.turma }}</td>
                 <td
                   class="py-3 text-right font-bold"
-                  :class="aluno.media < 6 ? 'text-red-500' : 'text-slate-900'"
+                  :class="
+                    Number(aluno.media || 0) < 6
+                      ? 'text-red-500'
+                      : 'text-slate-900'
+                  "
                 >
-                  {{ aluno.media.toFixed(1) }}
+                  <!-- Se a média existir, formata. Se não, mostra 0.0 -->
+                  {{ aluno.media ? aluno.media.toFixed(1) : "0.0" }}
                 </td>
               </tr>
             </tbody>
@@ -212,36 +217,55 @@ const estatisticas = ref({
 });
 const errorMessage = ref("");
 
+// Computados para os cards de cima
 const totalAlunos = computed(() => alunos.value.length);
-const mediaGeral = computed(() => {
-  if (!alunos.value.length) return "0.0";
-  const sum = alunos.value.reduce((acc, aluno) => acc + Number(aluno.media), 0);
-  return (sum / alunos.value.length).toFixed(1);
-});
+
+const mediaGeral = ref("0.0");
+
 const alunosEmRisco = computed(
-  () => alunos.value.filter((aluno) => Number(aluno.media) < 6).length,
+  () =>
+    alunos.value.filter(
+      (aluno) => typeof aluno.media === "number" && aluno.media < 6,
+    ).length,
 );
 
 const logout = () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("usuario");
   router.push("/");
 };
 
 const loadDashboard = async () => {
   try {
-    // 1. Carregar alunos e dados gerais
-    const resStats = await api.get("/dashboard-stats");
-    alunos.value = resStats.data.alunos || [];
+    errorMessage.value = "";
 
-    // 2. Carregar estatísticas matemáticas (Mín, Máx, Mediana)
-    const resMath = await api.get("/api/dashboard/estatisticas");
-    if (resMath.data.sucesso) {
-      estatisticas.value = resMath.data.dados;
+    // ADICIONE ISSO AQUI PARA O NOME APARECER:
+    const usuarioSalvo = localStorage.getItem("usuario");
+    if (usuarioSalvo) {
+      const user = JSON.parse(usuarioSalvo);
+      nomeUsuario.value = user.nome;
+    }
+
+    // 1. Carregar estatísticas gerais
+    const resStats = await api.get("/dashboard-stats");
+    if (resStats.data.sucesso) {
+      mediaGeral.value = resStats.data.dados.mediaGeral;
+      estatisticas.value = resStats.data.dados.estatisticas;
+    }
+
+    // 2. Carregar lista de alunos
+    const resAlunos = await api.get("/alunos");
+    if (resAlunos.data.sucesso) {
+      alunos.value = resAlunos.data.dados;
     }
   } catch (error) {
-    console.error(error);
+    console.error("Erro no Dashboard:", error);
     errorMessage.value = "Erro ao conectar com o servidor.";
-    if (error.response?.status === 401) logout();
+
+    // Se o token expirou ou é inválido
+    if (error.response?.status === 401) {
+      logout();
+    }
   }
 };
 
