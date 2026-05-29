@@ -1,209 +1,276 @@
 <template>
-  <section class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md p-1 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 animate-pulse">
-      <div class="bg-white rounded-lg shadow-lg">
-        <Transition
-          enter-active-class="transition-all duration-300 ease-in-out"
-          leave-active-class="transition-all duration-300 ease-in-out"
-          enter-from-class="opacity-0 transform translate-x-4"
-          leave-to-class="opacity-0 transform -translate-x-4"
-          mode="out-in"
+  <!-- Container Principal: Ajustado para centralizar e dar espaço no topo em telas pequenas -->
+  <section
+    class="min-h-screen w-full flex items-center justify-center bg-blue-600 relative overflow-hidden p-4 sm:p-6"
+  >
+    <!-- Padrão de fundo: Escondido em telas muito pequenas para limpar o visual -->
+    <div
+      class="absolute inset-0 opacity-10 pointer-events-none hidden sm:block"
+    >
+      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <pattern
+          id="edu-pattern"
+          x="0"
+          y="0"
+          width="100"
+          height="100"
+          patternUnits="userSpaceOnUse"
         >
-          <!-- TELA DE LOGIN -->
-          <article v-if="!modoCadastro" key="login" class="p-8" aria-label="Tela de login">
-            <header class="text-center mb-8">
-              <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">Visão Escolar</span>
-              <h1 class="text-2xl font-bold text-gray-900 mb-2">Entrar</h1>
-              <p class="text-gray-600">Acompanhe o desempenho acadêmico dos seus alunos.</p>
-            </header>
+          <circle cx="50" cy="50" r="2" fill="white" />
+          <path d="M20 20l10 10M80 20l-10 10" stroke="white" stroke-width="1" />
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#edu-pattern)" />
+      </svg>
+    </div>
 
-            <form class="space-y-6" @submit.prevent="entrar">
-              <div>
-                <label for="usuario-login" class="block text-sm font-medium text-gray-700 mb-2">E-mail</label>
+    <!-- Card Principal: Largura total no celular, limitado no PC -->
+    <div
+      class="relative w-full max-w-[420px] bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl p-6 pt-14 sm:p-8 sm:pt-16 transition-all mt-10 mb-4"
+    >
+      <!-- Logo Flutuante: Círculo feito via código -->
+      <div
+        class="absolute -top-12 left-1/2 -translate-x-1/2 w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full p-2 shadow-xl flex items-center justify-center border-4 border-blue-50 overflow-hidden"
+      >
+        <img
+          src="../assets/Logo.png"
+          class="w-full h-full object-contain"
+          alt="Logo"
+        />
+      </div>
+
+      <Transition name="fade-slide" mode="out-in">
+        <!-- TELA DE LOGIN -->
+        <article v-if="!modoCadastro" key="login">
+          <header class="text-center mb-6 sm:mb-8">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-blue-700 mb-1">
+              Visão Escolar
+            </h1>
+            <div
+              class="w-10 h-1 bg-blue-600 mx-auto rounded-full mb-4 sm:mb-6"
+            ></div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Entrar</h2>
+            <p class="text-gray-500 text-xs sm:text-sm mt-2 px-2">
+              Acompanhe o desempenho acadêmico dos seus alunos.
+            </p>
+          </header>
+
+          <form class="space-y-4 sm:space-y-5" @submit.prevent="entrar">
+            <div>
+              <label
+                class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase ml-1"
+                >E-mail</label
+              >
+              <div class="relative mt-1">
+                <Mail
+                  class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-blue-500"
+                />
                 <input
-                  id="usuario-login"
                   v-model="usuarioLogin"
                   type="email"
                   placeholder="seu@email.com"
                   required
-                  class="w-full border border-gray-300 rounded-lg bg-gray-50 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  class="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-sm sm:text-base transition-all"
                 />
               </div>
+            </div>
 
-              <div>
-                <label for="senha-login" class="block text-sm font-medium text-gray-700 mb-2">Senha</label>
+            <div>
+              <label
+                class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase ml-1"
+                >Senha</label
+              >
+              <div class="relative mt-1">
+                <Lock
+                  class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-blue-500"
+                />
                 <input
-                  id="senha-login"
                   v-model="senhaLogin"
                   type="password"
                   placeholder="Digite sua senha"
                   required
-                  class="w-full border border-gray-300 rounded-lg bg-gray-50 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  class="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-sm sm:text-base transition-all"
                 />
               </div>
+            </div>
 
-              <div v-if="mensagemLogin" class="p-3 rounded-lg" :class="erroLogin ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'">
-                <p class="text-sm font-medium">{{ mensagemLogin }}</p>
-              </div>
+            <div
+              v-if="mensagemLogin"
+              :class="erroLogin ? 'text-red-500' : 'text-green-500'"
+              class="text-xs sm:text-sm text-center font-medium"
+            >
+              {{ mensagemLogin }}
+            </div>
 
-              <button
-                type="submit"
-                class="w-full py-3 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="carregandoLogin"
-              >
-                {{ carregandoLogin ? 'Autenticando...' : 'Entrar no Sistema' }}
-              </button>
-            </form>
+            <button
+              type="submit"
+              :disabled="carregandoLogin"
+              class="w-full py-3.5 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95 disabled:opacity-50 text-sm sm:text-base"
+            >
+              {{ carregandoLogin ? "Autenticando..." : "Entrar no Sistema" }}
+            </button>
+          </form>
 
-            <p class="text-center mt-6 text-gray-600">
-              Ainda não tem acesso?
-              <button type="button" class="text-blue-600 hover:text-blue-800 font-medium ml-1" @click="irParaCadastro">Solicitar cadastro</button>
-            </p>
-          </article>
+          <footer
+            class="text-center mt-6 sm:mt-8 text-gray-500 text-xs sm:text-sm"
+          >
+            Ainda não tem acesso?
+            <button
+              @click="irParaCadastro"
+              class="text-blue-600 font-bold hover:underline ml-1"
+            >
+              Solicitar cadastro
+            </button>
+          </footer>
+        </article>
 
-          <!-- TELA DE CADASTRO -->
-          <article v-else key="cadastro" class="p-8" aria-label="Cadastro de usuario">
-            <header class="text-center mb-8">
-              <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">Visão Escolar</span>
-              <h1 class="text-2xl font-bold text-gray-900 mb-2">Criar conta</h1>
-              <p class="text-gray-600">Preencha os dados para acessar a plataforma pedagógica.</p>
-            </header>
+        <!-- TELA DE CADASTRO (Ajustada para mobile) -->
+        <article v-else key="cadastro">
+          <header class="text-center mb-6">
+            <h1 class="text-2xl font-extrabold text-blue-700">Visão Escolar</h1>
+            <h2 class="text-lg font-bold text-gray-800 mt-2">Criar conta</h2>
+          </header>
 
-            <form class="space-y-6" @submit.prevent="cadastrar">
-              <div>
-                <label for="nome-cadastro" class="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
-                <input
-                  id="nome-cadastro"
-                  v-model="nomeCadastro"
-                  type="text"
-                  placeholder="Ex: Ana Souza"
-                  required
-                  class="w-full border border-gray-300 rounded-lg bg-gray-50 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
+          <form class="space-y-3 sm:space-y-4" @submit.prevent="cadastrar">
+            <input
+              v-model="nomeCadastro"
+              type="text"
+              placeholder="Nome Completo"
+              required
+              class="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+            />
 
-              <div>
-                <label for="usuario-cadastro" class="block text-sm font-medium text-gray-700 mb-2">E-mail Institucional</label>
-                <input
-                  id="usuario-cadastro"
-                  v-model="usuarioCadastro"
-                  type="email"
-                  placeholder="ana.souza@escola.com"
-                  required
-                  class="w-full border border-gray-300 rounded-lg bg-gray-50 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
+            <input
+              v-model="usuarioCadastro"
+              type="email"
+              placeholder="E-mail Institucional"
+              required
+              class="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+            />
 
-              <div>
-                <label for="tipo-usuario" class="block text-sm font-medium text-gray-700 mb-2">Eu sou:</label>
-                <select
-                  id="tipo-usuario"
-                  v-model="tipoUsuario"
-                  class="w-full border border-gray-300 rounded-lg bg-gray-50 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                >
-                  <option value="professor">Professor(a)</option>
-                  <option value="coordenador">Coordenador(a) Pedagógico(a)</option>
-                </select>
-              </div>
+            <select
+              v-model="tipoUsuario"
+              class="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+            >
+              <option value="professor">Professor(a)</option>
+              <option value="coordenador">Coordenador(a)</option>
+            </select>
 
-              <div>
-                <label for="senha-cadastro" class="block text-sm font-medium text-gray-700 mb-2">Defina uma Senha</label>
-                <input
-                  id="senha-cadastro"
-                  v-model="senhaCadastro"
-                  type="password"
-                  placeholder="Mínimo 6 caracteres"
-                  required
-                  class="w-full border border-gray-300 rounded-lg bg-gray-50 px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
+            <input
+              v-model="senhaCadastro"
+              type="password"
+              placeholder="Defina uma Senha"
+              required
+              class="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+            />
 
-              <div v-if="erroCadastro" class="text-red-600 text-sm text-center">
-                {{ erroCadastro }}
-              </div>
+            <div v-if="erroCadastro" class="text-red-500 text-xs text-center">
+              {{ erroCadastro }}
+            </div>
 
-              <button
-                type="submit"
-                class="w-full py-3 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="carregandoCadastro"
-              >
-                {{ carregandoCadastro ? 'Processando...' : 'Finalizar Cadastro' }}
-              </button>
-            </form>
+            <button
+              type="submit"
+              :disabled="carregandoCadastro"
+              class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg transition-all active:scale-95 text-sm"
+            >
+              {{ carregandoCadastro ? "Processando..." : "Finalizar Cadastro" }}
+            </button>
+          </form>
 
-            <p class="text-center mt-6 text-gray-600">
-              Já possui conta?
-              <button type="button" class="text-blue-600 hover:text-blue-800 font-medium ml-1" @click="irParaLogin">Voltar ao login</button>
-            </p>
-          </article>
-        </Transition>
-      </div>
+          <p class="text-center mt-5 text-gray-500 text-xs">
+            Já possui conta?
+            <button
+              @click="irParaLogin"
+              class="text-blue-600 font-bold hover:underline ml-1"
+            >
+              Voltar ao login
+            </button>
+          </p>
+        </article>
+      </Transition>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import api from '../api/index.js'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { GraduationCap, Mail, Lock } from "lucide-vue-next";
+import api from "../api/index.js";
 
-const router = useRouter()
+const router = useRouter();
 
-const modoCadastro = ref(false)
-const usuarioLogin = ref('')
-const senhaLogin = ref('')
-const nomeCadastro = ref('')
-const usuarioCadastro = ref('')
-const senhaCadastro = ref('')
-const tipoUsuario = ref('professor')
-const erroCadastro = ref('')
-const mensagemLogin = ref('')
-const erroLogin = ref(false)
-const carregandoLogin = ref(false)
-const carregandoCadastro = ref(false)
+const modoCadastro = ref(false);
+const usuarioLogin = ref("");
+const senhaLogin = ref("");
+const nomeCadastro = ref("");
+const usuarioCadastro = ref("");
+const senhaCadastro = ref("");
+const tipoUsuario = ref("professor");
+const erroCadastro = ref("");
+const mensagemLogin = ref("");
+const erroLogin = ref(false);
+const carregandoLogin = ref(false);
+const carregandoCadastro = ref(false);
 
-const irParaCadastro = () => { modoCadastro.value = true }
-const irParaLogin = () => { modoCadastro.value = false }
+const irParaCadastro = () => {
+  modoCadastro.value = true;
+};
+const irParaLogin = () => {
+  modoCadastro.value = false;
+};
 
 async function entrar() {
-  mensagemLogin.value = ''
-  erroLogin.value = false
-  carregandoLogin.value = true
+  mensagemLogin.value = "";
+  erroLogin.value = false;
+  carregandoLogin.value = true;
   try {
-    const res = await api.post('/login', {
+    const res = await api.post("/login", {
       email: usuarioLogin.value,
-      senha: senhaLogin.value
-    })
-    localStorage.setItem('token', res.data.token)
-    mensagemLogin.value = 'Login realizado com sucesso! Redirecionando...'
-    erroLogin.value = false
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 500)
+      senha: senhaLogin.value,
+    });
+    localStorage.setItem("token", res.data.token);
+    mensagemLogin.value = "Login realizado! Redirecionando...";
+    setTimeout(() => router.push("/dashboard"), 500);
   } catch (err) {
-    mensagemLogin.value = err.response?.data?.message || 'E-mail ou senha incorretos.'
-    erroLogin.value = true
+    mensagemLogin.value =
+      err.response?.data?.message || "E-mail ou senha incorretos.";
+    erroLogin.value = true;
   } finally {
-    carregandoLogin.value = false
+    carregandoLogin.value = false;
   }
 }
 
 async function cadastrar() {
-  erroCadastro.value = ''
-  carregandoCadastro.value = true
+  erroCadastro.value = "";
+  carregandoCadastro.value = true;
   try {
-    await api.post('/usuarios', {
+    await api.post("/usuarios", {
       nome: nomeCadastro.value,
       email: usuarioCadastro.value,
       senha: senhaCadastro.value,
-      tipo_usuario: tipoUsuario.value
-    })
-    modoCadastro.value = false
-    mensagemLogin.value = 'Cadastro realizado! Faça login.'
+      tipo_usuario: tipoUsuario.value,
+    });
+    modoCadastro.value = false;
+    mensagemLogin.value = "Cadastro realizado! Faça login.";
   } catch (err) {
-    erroCadastro.value = 'Erro ao cadastrar. Tente outro e-mail.'
+    erroCadastro.value = "Erro ao cadastrar. Tente outro e-mail.";
   } finally {
-    carregandoCadastro.value = false
+    carregandoCadastro.value = false;
   }
 }
 </script>
+
+<style scoped>
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.4s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>
